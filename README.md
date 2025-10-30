@@ -26,7 +26,7 @@ Saídas de exemplo em [`/exemplos/Exemplo_Saida.txt`](exemplos/Exemplo_Saida.txt
 ## 👤 Responsabilidades de cada integrante
 - **Ramon Costa Da Guia** — Semântica, Tabela de Símbolos, Integração inicial.
 - **Thiago Estombelo Llapa** — Definição de casos de teste e exemplos.
-- **Luiz Felipe** — Organização do repositório e documentação.
+- **Luiz Felipe de Araujo Menezes** — Organização do repositório e documentação.
 
 > Nota: responsabilidades podem ser atualizadas a cada semana conforme evolução do projeto.
 
