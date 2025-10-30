@@ -1,0 +1,48 @@
+{
+  "start_state": "Inicio",
+  "states": {
+    "Inicio": {
+      "on": [
+        {
+          "intent": "saudacao",
+          "to": "Saudacao"
+        },
+        {
+          "intent": "erro",
+          "to": "Fim"
+        }
+      ]
+    },
+    "Saudacao": {
+      "respond": "Olá! Como posso ajudar?",
+      "on": [
+        {
+          "intent": "ajuda",
+          "to": "Ajuda"
+        },
+        {
+          "intent": "sair",
+          "to": "Fim"
+        }
+      ]
+    },
+    "Ajuda": {
+      "respond": "Aqui estão algumas opções...",
+      "on": [
+        {
+          "intent": "sair",
+          "to": "Fim"
+        }
+      ]
+    },
+    "Fim": {
+      "respond": "Até mais!"
+    }
+  },
+  "intents": [
+    "saudacao",
+    "ajuda",
+    "sair",
+    "erro"
+  ]
+}

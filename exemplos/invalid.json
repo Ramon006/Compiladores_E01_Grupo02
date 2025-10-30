@@ -1,0 +1,37 @@
+{
+  "start_state": "Inicio",
+  "states": {
+    "Inicio": {
+      "on": [
+        {
+          "intent": "saudacao",
+          "to": "Saudacao"
+        },
+        {
+          "intent": "desconhecida",
+          "to": "NaoExiste"
+        }
+      ]
+    },
+    "Saudacao": {
+      "respond": "Olá!",
+      "on": [
+        {
+          "intent": "ajuda",
+          "to": "Ajuda"
+        }
+      ]
+    },
+    "Ajuda": {
+      "respond": "Ajuda disponível."
+    },
+    "Orfao": {
+      "respond": "Nunca acessado."
+    }
+  },
+  "intents": [
+    "saudacao",
+    "ajuda",
+    "sair"
+  ]
+}
