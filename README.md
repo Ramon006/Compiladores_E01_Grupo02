@@ -1,111 +1,77 @@
-<<<<<<< HEAD
-# Projeto
+# Linguagem de Diálogo para Chatbots — Grupo 02
 
-## 🔁 Regras ChatFlow → IR (JSON) + 3 fluxos
+Este repositório implementa uma DSL mínima (ChatFlow) para modelagem de diálogos e sua tradução para uma **Estrutura Intermediária (IR)** consumível por analisadores (JSON). Inclui simulador e exemplos com **3 fluxos completos**.
 
-Este projeto inclui um **tradutor de regras ChatFlow (DSL mínima)** para a **estrutura intermediária (IR) em JSON** consumida pelo analisador semântico.
+## 📁 Estrutura
+```
+/src        # Código-fonte (Python) — conversores e simulador
+/docs       # Documentação semanal + versão final (final.pdf)
+/exemplos   # Regras de exemplo (.cf) e scripts de intents
+/tools      # Ferramentas utilitárias (cópia de referência)
+/schema     # JSON Schema do IR (opcional)
+/tests      # Testes de exemplo (negativos/borda)
+/demo       # Vídeo demo (demo.mp4) — até 5 min
+README.md
+```
+> Observação: mantemos `tools/` como referência e duplicamos os conversores em `/src` para atender ao requisito de código em `/src`.
 
-### Como usar
-1. Edite suas regras em `exemplos/chatflow_rules_example.cf`:
-   ```
-   start_state: Inicio
-   intents: saudacao, ajuda, sair, erro
+## 🛠️ Ferramentas
+- Python 3.11+
+- (Opcional) `make` para atalhos de build/demo/test
+- (Opcional) Git LFS para `demo/demo.mp4` caso >100MB
 
-   state Inicio:
-     on saudacao -> Saudacao
-     on erro -> Fim
-
-   state Saudacao:
-     on ajuda -> Ajuda
-     on sair -> Fim
-
-   state Ajuda:
-     on sair -> Fim
-
-   state Fim:
-     respond "Até mais!"
-   ```
-2. Gere o JSON:
-   ```bash
-   python tools/chatflow_to_json.py exemplos/chatflow_rules_example.cf exemplos/from_rules.json
-   ```
-3. Rode o analisador com o JSON gerado:
-   ```bash
-   python src/chatflow_semantic.py exemplos/from_rules.json
-   ```
-
-### 3 Fluxos completos
-A documentação `docs/fluxos.md` apresenta **3 fluxos de diálogo completos** correspondentes às regras acima.
-
-
-### ▶ Simulador de fluxos (opcional)
-Você pode simular uma sequência de intents sobre a IR em JSON:
-
+## ▶️ Como executar (exemplo em Python)
+### 1) Gerar IR (JSON) a partir da DSL:
 ```bash
-# gerar IR a partir das regras
 python tools/chatflow_to_json.py exemplos/chatflow_rules_example.cf exemplos/from_rules.json
+# ou via src/ (cópia do mesmo script)
+python src/chatflow_to_json.py exemplos/chatflow_rules_example.cf exemplos/from_rules.json
+```
 
-# simular 3 fluxos diferentes
+### 2) Simular 3 fluxos
+```bash
 python tools/simulate_chatflow.py exemplos/from_rules.json --script exemplos/fluxo1.txt
 python tools/simulate_chatflow.py exemplos/from_rules.json --script exemplos/fluxo2.txt
 python tools/simulate_chatflow.py exemplos/from_rules.json --script exemplos/fluxo3.txt
 
-# ou passar intents inline
+# também é possível inline:
 python tools/simulate_chatflow.py exemplos/from_rules.json --intents saudacao ajuda sair
 ```
-=======
-# Compiladores_E01 Grupo02
 
-Repositório do **Projeto Compiladores — Unidade II** (Grupo 02).  
-**Semana 01**: *Análise Semântica e Tabela de Símbolos (ChatFlow DSL)*.
-
-## 🎯 Objetivo
-Implementar a fase da **Semana 01**:
-- Verificar **variáveis/intenções/transições válidas**;
-- Criar **Tabela de Símbolos** (estados, intenções, transições);
-- Detectar **inconsistências** (*transições inexistentes* e *estados órfãos*).
-
-## 🧰 Linguagem e ferramentas utilizadas
-- **Linguagem:** Python 3.10+
-- **Ferramentas:** padrão da biblioteca Python (sem dependências externas).
-
-## ▶️ Instruções de execução
-Clonar o repositório e executar:
-
+### 3) (Opcional) Pseudo‑código a partir da IR
 ```bash
-python src/chatflow_semantic.py exemplos/valid.json
-python src/chatflow_semantic.py exemplos/invalid.json
+python tools/chatflow_to_pseudocode.py exemplos/from_rules.json
 ```
 
-Saídas de exemplo em [`/exemplos/Exemplo_Saida.txt`](exemplos/Exemplo_Saida.txt).
+## ✅ Critérios atendidos
+- Tradução ChatFlow → **IR (JSON)** e pseudo‑código textual opcional
+- **3 fluxos completos** simulados e reproduzíveis
+- **/src**, **/docs**, **/exemplos**, **/demo**, **README.md** no padrão
+- **Docs semanais** e versão final (`docs/final.pdf` placeholder)
+- Commits de acompanhamento (participação individual)
 
-## 👤 Responsabilidades de cada integrante
-- **Ramon Costa Da Guia** — Semântica, Tabela de Símbolos, Integração inicial.
-- **Thiago Estombelo Llapa** — Definição de casos de teste e exemplos.
-- **Luiz Felipe de Araujo Menezes** — Organização do repositório e documentação.
+## 👥 Responsáveis (exemplo)
+| Integrante | GitHub | Responsabilidades |
+|-----------|--------|-------------------|
+| Ramon     | @Ramon006 | Coordenação, simulador |
+| Integrante 2 | @user2   | DSL/Parser |
+| Integrante 3 | @user3   | IR/Validações |
 
-> Nota: responsabilidades podem ser atualizadas a cada semana conforme evolução do projeto.
-
-## 📂 Estrutura do repositório
-```
-Compiladores_E01 Grupo02/
-├── src/
-│   └── chatflow_semantic.py        # Semana 01 — semântica + tabela de símbolos
-├── docs/
-│   └── Semana01_Documentacao.pdf   # Documentação parcial (Semana 01)
-├── exemplos/
-│   ├── valid.json                  # Exemplo válido
-│   ├── invalid.json                # Exemplo com erros
-│   └── Exemplo_Saida.txt          # Saídas de execução (demonstração)
-├── demo/
-│   └── README.md                   # Instruções p/ gravação do vídeo (para a semana final)
-└── README.md
+## 🧪 Testes
+Executar testes (exemplo negativo em `tests/`):
+```bash
+python -m unittest discover -s tests -p "*.py"
 ```
 
-## 📸 Exemplos de saída
-Veja o arquivo [`/exemplos/Exemplo_Saida.txt`](exemplos/Exemplo_Saida.txt) com as execuções dos casos **válido** e **com erros**.
+## 🎬 Demo
+Adicionar `demo/demo.mp4` (até 5 min). Se o arquivo ficar grande, use Git LFS:
+```bash
+git lfs install
+git lfs track "*.mp4"
+git add .gitattributes demo/demo.mp4
+git commit -m "Add demo.mp4 via LFS"
+git push
+```
 
-## 📹 Demo (para o final)
-A pasta [`/demo`](demo/) conterá um **vídeo `.mp4` (máx. 5 min)** com a execução básica do sistema.  
-Para a Semana 01, apenas mantemos as instruções.
->>>>>>> 7f9cb31ea7811f2745af89877d1985be8c919a84
+## 📜 Licença
+MIT (ou a definida pela disciplina).

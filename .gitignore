@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+.DS_Store
+.venv/
+venv/
+.idea/
+.vscode/
+*.log
+*.tmp
+# se quiser ignorar zips locais de entrega, descomente:
+# *.zip
