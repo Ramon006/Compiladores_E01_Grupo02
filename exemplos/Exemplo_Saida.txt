@@ -1,0 +1,29 @@
+# Execução — Exemplo válido
+$ python src/chatflow_semantic.py exemplos/valid.json
+=== TABELA DE SÍMBOLOS ===
+Estados: Ajuda, Fim, Inicio, Saudacao
+Intenções: ajuda, erro, saudacao, sair
+Transições:
+  Inicio --[saudacao]--> Saudacao
+  Inicio --[erro]--> Fim
+  Saudacao --[ajuda]--> Ajuda
+  Saudacao --[sair]--> Fim
+  Ajuda --[sair]--> Fim
+
+=== PROBLEMAS DETECTADOS ===
+Nenhum problema encontrado ✅
+
+# Execução — Exemplo com erros
+$ python src/chatflow_semantic.py exemplos/invalid.json
+=== TABELA DE SÍMBOLOS ===
+Estados: Ajuda, Inicio, Orfao, Saudacao
+Intenções: ajuda, saudacao, sair
+Transições:
+  Inicio --[saudacao]--> Saudacao
+  Inicio --[desconhecida]--> NaoExiste
+  Saudacao --[ajuda]--> Ajuda
+
+=== PROBLEMAS DETECTADOS ===
+- ERROR: Transição 'Inicio' --[desconhecida]--> 'NaoExiste' aponta para estado inexistente. (em Inicio)
+- ERROR: Intenção 'desconhecida' usada em 'Inicio' não foi declarada. (em Inicio)
+- WARN: Estado 'Orfao' está órfão (inalcançável) a partir do estado inicial 'Inicio'. (em Orfao)
