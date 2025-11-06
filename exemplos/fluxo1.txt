@@ -1,0 +1,3 @@
+saudacao
+ajuda
+sair

@@ -1,0 +1,16 @@
+start_state: Inicio
+intents: saudacao, ajuda, sair, erro
+
+state Inicio:
+  on saudacao -> Saudacao
+  on erro -> Fim
+
+state Saudacao:
+  on ajuda -> Ajuda
+  on sair -> Fim
+
+state Ajuda:
+  on sair -> Fim
+
+state Fim:
+  respond "Até mais!"
