@@ -10,13 +10,14 @@ Implementa:
 Uso:
     python src/chatflow_semantic.py exemplos/from_rules.json
     ou apenas:
-    python src/chatflow_semantic.py
+    python src/chatflow_semantic.py   # e pressione ENTER para usar exemplos/from_rules.json
 """
 
 from dataclasses import dataclass, field
 from typing import Dict, List, Set, Tuple, Optional
 import json
 import sys
+import os
 
 # ------------------------------------------------------------
 # Classes de dados
@@ -24,7 +25,7 @@ import sys
 
 @dataclass
 class SemanticIssue:
-    kind: str   # 'ERROR' or 'WARN'
+    kind: str   # 'ERROR' ou 'WARN'
     message: str
     where: Optional[str] = None
 
@@ -36,7 +37,7 @@ class SymbolTable:
 
 
 # ------------------------------------------------------------
-# Classe principal do analisador semântico
+# Analisador semântico
 # ------------------------------------------------------------
 
 class ChatFlowSemanticAnalyzer:
@@ -47,18 +48,18 @@ class ChatFlowSemanticAnalyzer:
 
     # 1) Tabela de símbolos
     def build_symbol_table(self):
-        states = self.ir.get("states", {})
+        states = self.ir.get("states", {}) or {}
         for st in states.keys():
             self.table.states.add(st)
-        for intent in self.ir.get("intents", []):
+        for intent in self.ir.get("intents", []) or []:
             self.table.intents.add(intent)
         for st_name, st_def in states.items():
-            for tr in st_def.get("on", []) or []:
+            for tr in (st_def.get("on", []) or []):
                 intent = tr.get("intent")
                 to = tr.get("to")
                 self.table.transitions.append((st_name, intent, to))
 
-    # 2) Verificações de variáveis/intenções/transições
+    # 2) Verificações
     def check_undefined_states_in_transitions(self):
         for frm, intent, to in self.table.transitions:
             if to not in self.table.states:
@@ -77,7 +78,7 @@ class ChatFlowSemanticAnalyzer:
                     where=frm
                 ))
 
-    # 3) Inconsistências: estados órfãos
+    # 3) Estados órfãos
     def check_orphan_states(self):
         start = self.ir.get("start_state")
         if not start or start not in self.table.states:
@@ -94,7 +95,6 @@ class ChatFlowSemanticAnalyzer:
 
         visited: Set[str] = set()
         queue = [start]
-
         while queue:
             cur = queue.pop(0)
             if cur in visited:
@@ -112,7 +112,6 @@ class ChatFlowSemanticAnalyzer:
                     where=s
                 ))
 
-    # Executa todas as verificações
     def analyze(self):
         self.build_symbol_table()
         self.check_undefined_states_in_transitions()
@@ -122,7 +121,7 @@ class ChatFlowSemanticAnalyzer:
 
 
 # ------------------------------------------------------------
-# Impressão do relatório
+# Relatório
 # ------------------------------------------------------------
 
 def print_report(table: SymbolTable, issues: List[SemanticIssue]):
@@ -135,7 +134,7 @@ def print_report(table: SymbolTable, issues: List[SemanticIssue]):
 
     print("\n=== PROBLEMAS DETECTADOS ===")
     if not issues:
-        print("Nenhum problema encontrado ✅")
+        print("Nenhum problema encontrado ")
     else:
         for it in issues:
             where = f" (em {it.where})" if it.where else ""
@@ -150,63 +149,86 @@ def simulate_chatflow(ir: dict):
     print("\n=== SIMULAÇÃO INTERATIVA DO CHATFLOW ===")
     start = ir.get("start_state")
     if not start:
-        print("⚠️ Nenhum estado inicial definido.")
+        print(" Nenhum estado inicial definido.")
         return
-    states = ir.get("states", {})
+    states = ir.get("states", {}) or {}
     current = start
 
     print(f"Estado inicial: {current}")
     while True:
-        state_info = states.get(current, {})
-        options = state_info.get("on", [])
+        st = states.get(current, {}) or {}
+        options = st.get("on", []) or []
+
+        # Se houver mensagem de resposta no estado, exiba (se existir no JSON)
+        reply = st.get("respond")
+        if reply:
+            print(f"[{current}] RESPONDER: {reply}")
+
         if not options:
-            print(f"🚩 Estado '{current}' não possui transições. Fim do fluxo.")
+            print(f" Estado '{current}' não possui transições. Fim do fluxo.")
             break
 
         print("\nOpções disponíveis:")
         for i, opt in enumerate(options, start=1):
-            print(f"  {i}) {opt['intent']} → {opt['to']}")
+            print(f"  {i}) {opt.get('intent')} → {opt.get('to')}")
 
-        user = input("Digite a intenção (ou 'sair' para encerrar): ").strip().lower()
-        if user == "" or user == "sair":
+        user = input("Digite a intenção (ou ENTER para encerrar): ").strip().lower()
+        if user == "":
             print("Encerrando simulação.")
             break
 
-        found = False
+        moved = False
         for tr in options:
-            if tr["intent"].lower() == user:
-                print(f"[{current}] --[{user}]--> {tr['to']}")
-                current = tr["to"]
-                found = True
+            if str(tr.get("intent", "")).lower() == user:
+                print(f"[{current}] --[{user}]--> {tr.get('to')}")
+                current = tr.get("to")
+                moved = True
                 break
-        if not found:
-            print(f"❌ Intenção '{user}' não é válida neste estado.")
+        if not moved:
+            print(f" Intenção '{user}' não é válida neste estado.")
 
 
 # ------------------------------------------------------------
-# Função principal com input()
+# Utilitários de caminho e main
 # ------------------------------------------------------------
+
+def resolve_default_json_path(default_rel="exemplos/from_rules.json") -> str:
+    """
+    Resolve o caminho padrão relativo à raiz do projeto,
+    independente de onde o script esteja sendo executado.
+    """
+    # pasta do arquivo atual (src/)
+    here = os.path.dirname(os.path.abspath(__file__))
+    # sobe um nível (raiz do projeto)
+    root = os.path.abspath(os.path.join(here, os.pardir))
+    return os.path.join(root, default_rel.replace("/", os.sep))
 
 def main():
     print("=== ANALISADOR SEMÂNTICO CHATFLOW ===")
 
+    # 1) Caminho do JSON via argumento, se houver
     if len(sys.argv) > 1:
         path = sys.argv[1]
     else:
-        path = input("Digite o caminho do arquivo JSON de regras (ex: exemplos/from_rules.json): ").strip()
-
-    if not path:
-        print("❌ Nenhum arquivo informado. Encerrando.")
-        sys.exit(1)
+        # 2) Pergunta ao usuário; ENTER usa o exemplo padrão
+        suggested = resolve_default_json_path()
+        rel_hint = "exemplos/from_rules.json"
+        prompt = f"Digite o caminho do arquivo JSON (ENTER para usar {rel_hint}): "
+        entered = input(prompt).strip()
+        path = entered if entered else suggested
 
     try:
         with open(path, "r", encoding="utf-8") as f:
             ir = json.load(f)
     except FileNotFoundError:
-        print(f"❌ Arquivo não encontrado: {path}")
+        print(f" Arquivo não encontrado: {path}")
+        # dica amiga se tentou usar o padrão mas não existe
+        default_try = resolve_default_json_path()
+        if path == default_try:
+            print("Dica: verifique se a pasta 'exemplos/' está na raiz do projeto e contém 'from_rules.json'.")
         sys.exit(1)
     except json.JSONDecodeError as e:
-        print(f"⚠️ Erro ao ler o JSON: {e}")
+        print(f" Erro ao ler o JSON ({path}): {e}")
         sys.exit(1)
 
     analyzer = ChatFlowSemanticAnalyzer(ir)
@@ -214,12 +236,12 @@ def main():
     print_report(table, issues)
 
     # Se não houver erros, oferece simulação
-    if not any(i.kind == "ERROR" for i in issues):
+    if not any(i.kind.upper() == "ERROR" for i in issues):
         resp = input("\nDeseja simular o fluxo? (s/N): ").strip().lower()
         if resp == "s":
             simulate_chatflow(ir)
     else:
-        print("\n⚠️ Erros foram detectados — simulação desativada.")
+        print("\n Erros foram detectados — simulação desativada.")
 
 
 if __name__ == "__main__":
