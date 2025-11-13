@@ -1,97 +1,255 @@
-<h1 align="center">💬 ChatFlow</h1>
-<p align="center"><strong>Linguagem de Diálogo para Chatbots — Grupo 02</strong></p>
+# 🧠 Compiladores --- ChatFlow Compiler
 
------------------------------------------------------------------------------------------------------------------
-<p align="center">
-  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.11+-blue.svg?logo=python"></a>
-  <a href="#"><img src="https://img.shields.io/badge/Status-Em%20Desenvolvimento-yellow.svg"></a>
-  <a href="./LICENSE"><img src="https://img.shields.io/badge/Licença-MIT-green.svg"></a>
-  <img src="https://img.shields.io/badge/Build-Passing-brightgreen.svg">
-  <img src="https://img.shields.io/badge/Feito%20por-Grupo%2002-orange.svg">
-</p>
+**Grupo 02 --- Disciplina de Compiladores**
 
------------------------------------------------------------------------------------------------------------------
+Este repositório contém a implementação completa de um **compilador para
+a linguagem ChatFlow**, uma DSL criada para definir sistemas de diálogo
+baseados em estados, intenções e transições.\
+O compilador possui todas as fases essenciais --- análise léxica,
+sintática simplificada, análise semântica, geração de código
+intermediário (JSON), simulação interativa e visualização ASCII.
 
-Este projeto apresenta a **ChatFlow**, uma DSL (Domain-Specific Language) mínima desenvolvida para **modelar fluxos de diálogo** e traduzi-los para uma **Representação Intermediária (IR)** em formato **JSON**, utilizada por analisadores e simuladores.  
-Inclui também um **simulador funcional** e **três fluxos de exemplo** totalmente reprodutíveis.
+------------------------------------------------------------------------
 
+# 📌 Objetivo do Projeto
 
-## 📁 Estrutura
-```
-/src        # Código-fonte (Python) — conversores e simulador
-/docs       # Documentação semanal + versão final (final.pdf)
-/exemplos   # Regras de exemplo (.cf) e scripts de intents
-/tools      # Ferramentas utilitárias (cópia de referência)
-/schema     # JSON Schema do IR (opcional)
-/tests      # Testes de exemplo (negativos/borda)
-/demo       # Vídeo demo (demo.mp4) — até 5 min
-README.md
-```
-> Observação: mantemos `tools/` como referência e duplicamos os conversores em `/src` para atender ao requisito de código em `/src`.
+Desenvolver um compilador funcional capaz de:
 
-## 🛠️ Ferramentas Utilizadas
+-   Interpretar regras de diálogo escritas em ChatFlow\
+-   Identificar erros sintáticos e semânticos\
+-   Gerar código intermediário (IR) em formato JSON\
+-   Simular a execução de um diálogo real\
+-   Exibir fluxogramas ASCII mostrando o fluxo do diálogo\
+-   Validar intenções, estados, transições e detectar estados órfãos
 
-| Ferramenta | Versão | Uso principal |
-|-------------|---------|----------------|
-| **Python** | 3.11+ | Linguagem principal do projeto |
-| **Make** *(opcional)* | — | Automatiza tarefas de build, testes e execução de demos |
-| **Git LFS** *(opcional)* | — | Necessário para versionar arquivos grandes (ex: `demo/demo.mp4` com mais de **100 MB**) |
+Este projeto atende integralmente os requisitos da disciplina.
 
+------------------------------------------------------------------------
 
-## ▶️ Como executar (exemplo em Python)
-### 1) Gerar IR (JSON) a partir da DSL:
-```bash
-python tools/chatflow_to_json.py exemplos/chatflow_rules_example.cf exemplos/from_rules.json
-# ou via src/ (cópia do mesmo script)
-python src/chatflow_to_json.py exemplos/chatflow_rules_example.cf exemplos/from_rules.json
-```
+# 🗂 Estrutura do Repositório
 
-### 2) Simular 3 fluxos
-```bash
-python tools/simulate_chatflow.py exemplos/from_rules.json --script exemplos/fluxo1.txt
-python tools/simulate_chatflow.py exemplos/from_rules.json --script exemplos/fluxo2.txt
-python tools/simulate_chatflow.py exemplos/from_rules.json --script exemplos/fluxo3.txt
+    Compiladores_E01_Grupo02/
+    │
+    ├── src/                     # Código-fonte principal (analisador semântico)
+    │   ├── chatflow_semantic.py
+    │
+    ├── tools/                   # Ferramentas do compilador
+    │   ├── chatflow_to_json.py
+    │   ├── simulate_chatflow.py
+    │   ├── visualize_chatflow.py
+    │
+    ├── exemplos/                # Exemplos para teste
+    │   ├── chatflow_rules_example.cf
+    │   ├── valid.json
+    │   ├── invalid.json
+    │   ├── fluxo1.txt, fluxo2.txt, fluxo3.txt
+    │
+    ├── docs/                    # Documentação parcial e final
+    │   ├── fluxos.md
+    │   ├── semanal-01.md
+    │   ├── semanal-02.md
+    │   ├── semanal-03.md
+    │   ├── final.pdf
+    │
+    ├── tests/                   # Testes automatizados
+    │   ├── test_invalid_state.py
+    │
+    ├── schema/                  # Esquemas JSON usados na validação
+    │   ├── ir.schema.json
+    │
+    ├── demo/                    # Vídeo demonstrativo (quando entregue)
+    │   ├── demo.mp4
+    │
+    └── README.md                # Este arquivo
 
-# também é possível inline:
-python tools/simulate_chatflow.py exemplos/from_rules.json --intents saudacao ajuda sair
-```
+------------------------------------------------------------------------
 
-### 3) (Opcional) Pseudo‑código a partir da IR
-```bash
-python tools/chatflow_to_pseudocode.py exemplos/from_rules.json
-```
+# 🐍 Requisitos
 
-## ✅ Critérios atendidos
-- Tradução ChatFlow → **IR (JSON)** e pseudo‑código textual opcional
-- **3 fluxos completos** simulados e reproduzíveis
-- **/src**, **/docs**, **/exemplos**, **/demo**, **README.md** no padrão
-- **Docs semanais** e versão final (`docs/final.pdf` placeholder)
-- Commits de acompanhamento (participação individual)
+-   **Python 3.10+** (obrigatório devido ao uso de `match/case`)
+-   Biblioteca `jsonschema`\
+-   Biblioteca `rich` (opcional para melhor visualização)
 
-## 👥 Equipe de Desenvolvimento(exemplo)
+Instale tudo com:
 
-| Nome | GitHub | Principais Responsabilidades |
-|------|---------|------------------------------|
-| **Ramon** | [@Ramon006](https://github.com/Ramon006) | Coordenação geral, desenvolvimento do simulador |
-| **Integrante 2** | [@user2](https://github.com/user2) | Implementação da DSL e do Parser |
-| **Integrante 3** | [@ThiagoEstombelo](https://github.com/ThiagoEstombelo) | IR (Intermediate Representation) e validações semânticas |
-
-
-## 🧪 Testes
-Executar testes (exemplo negativo em `tests/`):
-```bash
-python -m unittest discover -s tests -p "*.py"
+``` bash
+pip install -r requirements.txt
 ```
 
-## 🎬 Demo
-Adicionar `demo/demo.mp4` (até 5 min). Se o arquivo ficar grande, use Git LFS:
-```bash
-git lfs install
-git lfs track "*.mp4"
-git add .gitattributes demo/demo.mp4
-git commit -m "Add demo.mp4 via LFS"
-git push
+------------------------------------------------------------------------
+
+# 🚀 Como Executar o Projeto
+
+O compilador possui três módulos principais:
+
+1.  **Conversor ChatFlow → JSON**\
+2.  **Analisador Semântico**\
+3.  **Simulador Interativo de Diálogo**\
+4.  **Visualizador ASCII**
+
+Todos estão na pasta `tools/` e `src/`.
+
+------------------------------------------------------------------------
+
+# ▶️ 1. Converter Regras ChatFlow para JSON
+
+Exemplo:
+
+``` bash
+python tools/chatflow_to_json.py exemplos/chatflow_rules_example.cf
 ```
 
-## 📜 Licença
-MIT (ou a definida pela disciplina).
+Salvar a saída em arquivo:
+
+``` bash
+python tools/chatflow_to_json.py exemplos/chatflow_rules_example.cf -o saida.json
+```
+
+------------------------------------------------------------------------
+
+# ▶️ 2. Executar o Analisador Semântico
+
+``` bash
+python src/chatflow_semantic.py
+```
+
+Quando pedir o caminho, você pode:
+
+✔ pressionar **ENTER** para usar `exemplos/from_rules.json`\
+ou\
+✔ digitar outro arquivo:
+
+``` bash
+exemplos/valid.json
+```
+
+------------------------------------------------------------------------
+
+# ▶️ 3. Simulação Interativa do Fluxo
+
+``` bash
+python tools/simulate_chatflow.py exemplos/valid.json
+```
+
+Digite as intenções no terminal:
+
+    saudacao
+    ajuda
+    sair
+
+O simulador segue as transições definidas no JSON.
+
+------------------------------------------------------------------------
+
+# ▶️ 4. Visualização ASCII do Fluxo
+
+``` bash
+python tools/visualize_chatflow.py exemplos/valid.json
+```
+
+Saída esperada (exemplo):
+
+    [Inicio] --saudacao--> [Saudacao]
+    [Saudacao] --ajuda--> [Ajuda]
+    [Ajuda] --sair--> [Fim]
+
+------------------------------------------------------------------------
+
+# ▶️ 5. Pipeline Completo (Compilador Inteiro)
+
+``` bash
+python tools/chatflow_to_json.py exemplos/chatflow_rules_example.cf -o fluxo.json
+python src/chatflow_semantic.py fluxo.json
+python tools/simulate_chatflow.py fluxo.json
+python tools/visualize_chatflow.py fluxo.json
+```
+
+------------------------------------------------------------------------
+
+# 🧪 Testes Automatizados
+
+Executar todos os testes:
+
+``` bash
+pytest -v
+```
+
+Ou um teste específico:
+
+``` bash
+python tests/test_invalid_state.py
+```
+
+------------------------------------------------------------------------
+
+# 🧩 Exemplos de Fluxos (documentados em `docs/fluxos.md`)
+
+O arquivo `docs/fluxos.md` contém:
+
+-   3 fluxos completos\
+-   Diagramas ASCII\
+-   Representação JSON\
+-   Descrição detalhada\
+-   Caminhos alternativos e erros
+
+Esse documento é parte essencial da entrega.
+
+------------------------------------------------------------------------
+
+# 👥 Integrantes do Grupo
+
+  -----------------------------------------------------------------------
+  Nome                                     Função / Responsabilidades
+  ---------------------------------------- ------------------------------
+  **Ramon Costa da Guia**                  Desenvolvimento principal,
+                                           análise semântica, integração
+                                           geral, documentação.
+
+  **Luiz Felipe de Araujo Menezes**        Implementação de ferramentas
+                                           (`tools`), testes e simulação.
+
+  **Thiago Estombelo Llapa**               Conversão ChatFlow → JSON,
+                                           estrutura de fluxos e
+                                           validação.
+  -----------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+# 📝 Entregas da Disciplina
+
+  Entrega                        Status
+  ------------------------------ ----------------
+  Configuração do Repositório    ✔ Concluída
+  Documento Semanal (Semana 1)   ✔
+  Documento Semanal (Semana 2)   ✔
+  Documento Semanal (Semana 3)   ✔
+  Compilador Completo            ✔
+  Visualização ASCII             ✔
+  Simulador Interativo           ✔
+  Documentação Final             ✔
+  Vídeo Demo (até 5 minutos)     🔄 Em produção
+
+------------------------------------------------------------------------
+
+# 🎥 Demo (quando concluída)
+
+O vídeo demonstrativo ficará na pasta:
+
+    /demo/demo.mp4
+
+------------------------------------------------------------------------
+
+# ✔ Conclusão
+
+Este repositório contém um compilador totalmente funcional para a
+linguagem ChatFlow, com todas as fases implementadas, testes
+automáticos, documentação parcial e final, e demonstrações práticas
+exigidas pela disciplina.
+
+O projeto está pronto para avaliação.
+
+------------------------------------------------------------------------
+
+# 📫 Contato
+
+**ramon.guia@souunit.com.br**
