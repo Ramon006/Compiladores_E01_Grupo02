@@ -61,12 +61,14 @@ python tools/chatflow_to_pseudocode.py exemplos/from_rules.json
 - **Docs semanais** e versão final (`docs/final.pdf` placeholder)
 - Commits de acompanhamento (participação individual)
 
-## 👥 Responsáveis (exemplo)
-| Integrante | GitHub | Responsabilidades |
-|-----------|--------|-------------------|
-| Ramon     | @Ramon006 | Coordenação, simulador |
-| Integrante 2 | @user2   | DSL/Parser |
-| Integrante 3 | @ThiagoEstombelo   | IR/Validações |
+## 👥 Equipe de Desenvolvimento(exemplo)
+
+| Nome | GitHub | Principais Responsabilidades |
+|------|---------|------------------------------|
+| **Ramon** | [@Ramon006](https://github.com/Ramon006) | Coordenação geral, desenvolvimento do simulador |
+| **Integrante 2** | [@user2](https://github.com/user2) | Implementação da DSL e do Parser |
+| **Integrante 3** | [@ThiagoEstombelo](https://github.com/ThiagoEstombelo) | IR (Intermediate Representation) e validações semânticas |
+
 
 ## 🧪 Testes
 Executar testes (exemplo negativo em `tests/`):
