@@ -29,10 +29,14 @@ README.md
 ```
 > Observação: mantemos `tools/` como referência e duplicamos os conversores em `/src` para atender ao requisito de código em `/src`.
 
-## 🛠️ Ferramentas
-- Python 3.11+
-- (Opcional) `make` para atalhos de build/demo/test
-- (Opcional) Git LFS para `demo/demo.mp4` caso >100MB
+## 🛠️ Ferramentas Utilizadas
+
+| Ferramenta | Versão | Uso principal |
+|-------------|---------|----------------|
+| **Python** | 3.11+ | Linguagem principal do projeto |
+| **Make** *(opcional)* | — | Automatiza tarefas de build, testes e execução de demos |
+| **Git LFS** *(opcional)* | — | Necessário para versionar arquivos grandes (ex: `demo/demo.mp4` com mais de **100 MB**) |
+
 
 ## ▶️ Como executar (exemplo em Python)
 ### 1) Gerar IR (JSON) a partir da DSL:
