@@ -1,3 +1,4 @@
+ 💬 ChatFlow  
 # Linguagem de Diálogo para Chatbots — Grupo 02
 
 Este repositório implementa uma DSL mínima (ChatFlow) para modelagem de diálogos e sua tradução para uma **Estrutura Intermediária (IR)** consumível por analisadores (JSON). Inclui simulador e exemplos com **3 fluxos completos**.
@@ -55,7 +56,7 @@ python tools/chatflow_to_pseudocode.py exemplos/from_rules.json
 |-----------|--------|-------------------|
 | Ramon     | @Ramon006 | Coordenação, simulador |
 | Integrante 2 | @user2   | DSL/Parser |
-| Integrante 3 | @user3   | IR/Validações |
+| Integrante 3 | @ThiagoEstombelo   | IR/Validações |
 
 ## 🧪 Testes
 Executar testes (exemplo negativo em `tests/`):
