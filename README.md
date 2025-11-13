@@ -208,7 +208,7 @@ Esse documento é parte essencial da entrega.
   **Luiz Felipe de Araujo Menezes**        Implementação de ferramentas
                                            (`tools`), testes e simulação.
 
-  **Thiago Estombelo Llapa**               Conversão ChatFlow → JSON,
+  Thiago Estombelo Llapa               Conversão ChatFlow → JSON,
                                            estrutura de fluxos e
                                            validação.
   -----------------------------------------------------------------------
