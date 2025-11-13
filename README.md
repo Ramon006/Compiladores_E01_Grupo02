@@ -1,5 +1,6 @@
- 💬 ChatFlow  
-# Linguagem de Diálogo para Chatbots — Grupo 02
+<h1 align="center">💬 ChatFlow</h1>
+<p align="center"><strong>Linguagem de Diálogo para Chatbots — Grupo 02</strong></p>
+
 
 <p align="center">
   <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.11+-blue.svg?logo=python"></a>
