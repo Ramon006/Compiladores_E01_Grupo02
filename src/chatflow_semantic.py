@@ -20,24 +20,33 @@ import sys
 import os
 
 # ------------------------------------------------------------
-# Classes de dados
+#  CLASSES DE DADOS BÁSICAS
+# ------------------------------------------------------------
+# Estas classes representam os elementos fundamentais da análise semântica:
+# - SemanticIssue: erros ou avisos encontrados.
+# - SymbolTable: estrutura que guarda estados, intenções e transições do fluxo.
 # ------------------------------------------------------------
 
 @dataclass
 class SemanticIssue:
-    kind: str   # 'ERROR' ou 'WARN'
-    message: str
-    where: Optional[str] = None
+    kind: str   # 'ERROR' ou 'WARN' — tipo de problema detectado
+    message: str  # descrição do problema
+    where: Optional[str] = None  # local onde ocorreu (opcional)
 
 @dataclass
 class SymbolTable:
-    states: Set[str] = field(default_factory=set)
-    intents: Set[str] = field(default_factory=set)
-    transitions: List[Tuple[str, str, str]] = field(default_factory=list)  # (from_state, intent, to_state)
+    states: Set[str] = field(default_factory=set)   # conjunto de estados declarados
+    intents: Set[str] = field(default_factory=set)  # conjunto de intenções declaradas
+    transitions: List[Tuple[str, str, str]] = field(default_factory=list)  # lista de transições (origem, intenção, destino)
 
 
 # ------------------------------------------------------------
-# Analisador semântico
+#  CLASSE PRINCIPAL: ANALISADOR SEMÂNTICO
+# ------------------------------------------------------------
+# Responsável por construir a tabela de símbolos e verificar:
+#  - estados inexistentes,
+#  - intenções não declaradas,
+#  - e estados órfãos (não alcançáveis).
 # ------------------------------------------------------------
 
 class ChatFlowSemanticAnalyzer:
@@ -46,7 +55,7 @@ class ChatFlowSemanticAnalyzer:
         self.table = SymbolTable()
         self.issues: List[SemanticIssue] = []
 
-    # 1) Tabela de símbolos
+    # Cria a tabela de símbolos a partir do JSON (estados, intenções, transições)
     def build_symbol_table(self):
         states = self.ir.get("states", {}) or {}
         for st in states.keys():
@@ -59,7 +68,7 @@ class ChatFlowSemanticAnalyzer:
                 to = tr.get("to")
                 self.table.transitions.append((st_name, intent, to))
 
-    # 2) Verificações
+    # Verifica transições para estados que não existem
     def check_undefined_states_in_transitions(self):
         for frm, intent, to in self.table.transitions:
             if to not in self.table.states:
@@ -69,6 +78,7 @@ class ChatFlowSemanticAnalyzer:
                     where=frm
                 ))
 
+    # Verifica intenções usadas sem declaração
     def check_undefined_intents_in_transitions(self):
         for frm, intent, to in self.table.transitions:
             if intent not in self.table.intents:
@@ -78,7 +88,7 @@ class ChatFlowSemanticAnalyzer:
                     where=frm
                 ))
 
-    # 3) Estados órfãos
+    # Detecta estados que não são alcançáveis a partir do estado inicial
     def check_orphan_states(self):
         start = self.ir.get("start_state")
         if not start or start not in self.table.states:
@@ -89,10 +99,12 @@ class ChatFlowSemanticAnalyzer:
             ))
             return
 
+        # Cria um grafo de conexões entre os estados
         graph: Dict[str, List[str]] = {s: [] for s in self.table.states}
         for frm, intent, to in self.table.transitions:
             graph[frm].append(to)
 
+        # Usa busca em largura (BFS) para descobrir os estados alcançáveis
         visited: Set[str] = set()
         queue = [start]
         while queue:
@@ -104,6 +116,7 @@ class ChatFlowSemanticAnalyzer:
                 if nxt not in visited:
                     queue.append(nxt)
 
+        # Qualquer estado não visitado é considerado órfão
         for s in self.table.states:
             if s not in visited:
                 self.issues.append(SemanticIssue(
@@ -112,6 +125,7 @@ class ChatFlowSemanticAnalyzer:
                     where=s
                 ))
 
+    # Executa todas as etapas da análise e retorna resultados
     def analyze(self):
         self.build_symbol_table()
         self.check_undefined_states_in_transitions()
@@ -121,7 +135,9 @@ class ChatFlowSemanticAnalyzer:
 
 
 # ------------------------------------------------------------
-# Relatório
+#  RELATÓRIO DE RESULTADOS
+# ------------------------------------------------------------
+# Exibe a tabela de símbolos gerada e os erros/avisos detectados.
 # ------------------------------------------------------------
 
 def print_report(table: SymbolTable, issues: List[SemanticIssue]):
@@ -142,7 +158,9 @@ def print_report(table: SymbolTable, issues: List[SemanticIssue]):
 
 
 # ------------------------------------------------------------
-# Simulação interativa
+#  SIMULAÇÃO INTERATIVA (opcional)
+# ------------------------------------------------------------
+# Permite testar manualmente o fluxo de diálogo do ChatFlow.
 # ------------------------------------------------------------
 
 def simulate_chatflow(ir: dict):
@@ -159,11 +177,12 @@ def simulate_chatflow(ir: dict):
         st = states.get(current, {}) or {}
         options = st.get("on", []) or []
 
-        # Se houver mensagem de resposta no estado, exiba (se existir no JSON)
+        # Exibe resposta automática do estado (se existir no JSON)
         reply = st.get("respond")
         if reply:
             print(f"[{current}] RESPONDER: {reply}")
 
+        # Encerra se o estado não tiver transições
         if not options:
             print(f" Estado '{current}' não possui transições. Fim do fluxo.")
             break
@@ -177,6 +196,7 @@ def simulate_chatflow(ir: dict):
             print("Encerrando simulação.")
             break
 
+        # Procura intenção correspondente à entrada do usuário
         moved = False
         for tr in options:
             if str(tr.get("intent", "")).lower() == user:
@@ -189,7 +209,10 @@ def simulate_chatflow(ir: dict):
 
 
 # ------------------------------------------------------------
-# Utilitários de caminho e main
+#  FUNÇÕES AUXILIARES E MAIN
+# ------------------------------------------------------------
+# resolve_default_json_path → ajusta caminho padrão
+# main → executa todo o fluxo do analisador
 # ------------------------------------------------------------
 
 def resolve_default_json_path(default_rel="exemplos/from_rules.json") -> str:
@@ -197,32 +220,30 @@ def resolve_default_json_path(default_rel="exemplos/from_rules.json") -> str:
     Resolve o caminho padrão relativo à raiz do projeto,
     independente de onde o script esteja sendo executado.
     """
-    # pasta do arquivo atual (src/)
     here = os.path.dirname(os.path.abspath(__file__))
-    # sobe um nível (raiz do projeto)
     root = os.path.abspath(os.path.join(here, os.pardir))
     return os.path.join(root, default_rel.replace("/", os.sep))
 
 def main():
     print("=== ANALISADOR SEMÂNTICO CHATFLOW ===")
 
-    # 1) Caminho do JSON via argumento, se houver
+    # Verifica se o usuário passou um arquivo JSON por argumento
     if len(sys.argv) > 1:
         path = sys.argv[1]
     else:
-        # 2) Pergunta ao usuário; ENTER usa o exemplo padrão
+        # Caso contrário, pergunta interativamente
         suggested = resolve_default_json_path()
         rel_hint = "exemplos/from_rules.json"
         prompt = f"Digite o caminho do arquivo JSON (ENTER para usar {rel_hint}): "
         entered = input(prompt).strip()
         path = entered if entered else suggested
 
+    # Tenta abrir e carregar o arquivo JSON informado
     try:
         with open(path, "r", encoding="utf-8") as f:
             ir = json.load(f)
     except FileNotFoundError:
         print(f" Arquivo não encontrado: {path}")
-        # dica amiga se tentou usar o padrão mas não existe
         default_try = resolve_default_json_path()
         if path == default_try:
             print("Dica: verifique se a pasta 'exemplos/' está na raiz do projeto e contém 'from_rules.json'.")
@@ -231,11 +252,12 @@ def main():
         print(f" Erro ao ler o JSON ({path}): {e}")
         sys.exit(1)
 
+    # Executa a análise semântica
     analyzer = ChatFlowSemanticAnalyzer(ir)
     table, issues = analyzer.analyze()
     print_report(table, issues)
 
-    # Se não houver erros, oferece simulação
+    # Se não houver erros, oferece a simulação
     if not any(i.kind.upper() == "ERROR" for i in issues):
         resp = input("\nDeseja simular o fluxo? (s/N): ").strip().lower()
         if resp == "s":
