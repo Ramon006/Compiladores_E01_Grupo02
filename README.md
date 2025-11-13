@@ -1,7 +1,7 @@
 <h1 align="center">💬 ChatFlow</h1>
 <p align="center"><strong>Linguagem de Diálogo para Chatbots — Grupo 02</strong></p>
 
-
+-----------------------------------------------------------------------------------------------------------------
 <p align="center">
   <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.11+-blue.svg?logo=python"></a>
   <a href="#"><img src="https://img.shields.io/badge/Status-Em%20Desenvolvimento-yellow.svg"></a>
@@ -9,7 +9,7 @@
   <img src="https://img.shields.io/badge/Build-Passing-brightgreen.svg">
   <img src="https://img.shields.io/badge/Feito%20por-Grupo%2002-orange.svg">
 </p>
-
+-----------------------------------------------------------------------------------------------------------------
 Este projeto apresenta a **ChatFlow**, uma DSL (Domain-Specific Language) mínima desenvolvida para **modelar fluxos de diálogo** e traduzi-los para uma **Representação Intermediária (IR)** em formato **JSON**, utilizada por analisadores e simuladores.  
 Inclui também um **simulador funcional** e **três fluxos de exemplo** totalmente reprodutíveis.
 
