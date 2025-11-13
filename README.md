@@ -9,7 +9,9 @@
   <img src="https://img.shields.io/badge/Feito%20por-Grupo%2002-orange.svg">
 </p>
 
-Este repositório implementa uma DSL mínima (ChatFlow) para modelagem de diálogos e sua tradução para uma **Estrutura Intermediária (IR)** consumível por analisadores (JSON). Inclui simulador e exemplos com **3 fluxos completos**.
+Este projeto apresenta a **ChatFlow**, uma DSL (Domain-Specific Language) mínima desenvolvida para **modelar fluxos de diálogo** e traduzi-los para uma **Representação Intermediária (IR)** em formato **JSON**, utilizada por analisadores e simuladores.  
+Inclui também um **simulador funcional** e **três fluxos de exemplo** totalmente reprodutíveis.
+
 
 ## 📁 Estrutura
 ```
