@@ -134,7 +134,7 @@ fluxo.json
 # ▶️ 3. Simulação Interativa
 
 ```bash
-python tools/simulate_chatflow.py fluxo.json
+python src/chatflow_semantic.py fluxo.json
 ```
 
 Digite intenções conforme o fluxo:
