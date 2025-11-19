@@ -174,21 +174,7 @@ python tools/visualize_chatflow.py fluxo.json
 
 ---
 
-# 🧪 Testes Automatizados
 
-Rodar todos os testes:
-
-```bash
-pytest -v
-```
-
-Teste específico:
-
-```bash
-python tests/test_invalid_state.py
-```
-
----
 
 # 🧩 Exemplos de Fluxos (docs/fluxos.md)
 
